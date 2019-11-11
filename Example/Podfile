@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'SuperEasyLayout_Example' do
+  pod 'SuperEasyLayout', :path => '../'
+
+  target 'SuperEasyLayout_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

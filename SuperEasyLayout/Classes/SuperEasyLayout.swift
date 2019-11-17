@@ -355,12 +355,12 @@ extension Anchor {
     }
 
     public static func / (lv: Anchor, rv: CGFloat) -> Anchor {
-        lv.multiplier = 1 / rv
+        lv.multiplier *= 1 / rv
         return lv
     }
 
     public static func ! (lv: Anchor, rv: UILayoutPriority) -> Anchor {
-        lv.priority = rv
+        lv.priority *= rv
         return lv
     }
 }

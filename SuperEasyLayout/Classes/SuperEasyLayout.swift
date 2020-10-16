@@ -365,56 +365,21 @@ extension Anchor {
     }
 }
 
-public class ContentPriority {
-    enum ContentPriorityType {
-        case hugging
-        case compressionRegistance
-    }
-
-    let view: UIView
-    let type: ContentPriorityType
-    let axis: NSLayoutConstraint.Axis
-
-    init(view: UIView, type: ContentPriorityType, axis: NSLayoutConstraint.Axis) {
-        self.view = view
-        self.type = type
-        self.axis = axis
-    }
-
-    @discardableResult
-    public static func == (lv: ContentPriority, rv: UILayoutPriority) -> UIView {
-        switch lv.type {
-        case .hugging:
-            lv.view.setContentHuggingPriority(rv, for: lv.axis)
-        case .compressionRegistance:
-            lv.view.setContentCompressionResistancePriority(rv, for: lv.axis)
-        }
-        return lv.view
-    }
-
-    @discardableResult
-    public static func == (lv: ContentPriority, rv: Float) -> UIView {
-        switch lv.type {
-        case .hugging:
-            lv.view.setContentHuggingPriority(UILayoutPriority(rawValue: rv), for: lv.axis)
-        case .compressionRegistance:
-            lv.view.setContentCompressionResistancePriority(UILayoutPriority(rawValue: rv), for: lv.axis)
-        }
-        return lv.view
-    }
-}
-
 extension UIView {
-    public var huggingHorizontalPriority: ContentPriority {
-        return ContentPriority(view: self, type: .hugging, axis: .horizontal)
+    public var huggingHorizontalPriority: UILayoutPriority {
+        get { contentHuggingPriority(for: .horizontal) }
+        set { setContentHuggingPriority(newValue, for: .horizontal) }
     }
-    public var huggingVerticalPriority: ContentPriority {
-        return ContentPriority(view: self, type: .hugging, axis: .vertical)
+    public var huggingVerticalPriority: UILayoutPriority {
+        get { contentHuggingPriority(for: .vertical) }
+        set { setContentHuggingPriority(newValue, for: .vertical) }
     }
-    public var compressionRegistanceHorizontalPriority: ContentPriority {
-        return ContentPriority(view: self, type: .compressionRegistance, axis: .horizontal)
+    public var compressionRegistanceHorizontalPriority: UILayoutPriority {
+        get { contentCompressionResistancePriority(for: .horizontal) }
+        set { setContentCompressionResistancePriority(newValue, for: .horizontal) }
     }
-    public var compressionRegistanceVerticalPriority: ContentPriority {
-        return ContentPriority(view: self, type: .compressionRegistance, axis: .vertical)
+    public var compressionRegistanceVerticalPriority: UILayoutPriority {
+        get { contentCompressionResistancePriority(for: .vertical) }
+        set { setContentCompressionResistancePriority(newValue, for: .vertical) }
     }
 }

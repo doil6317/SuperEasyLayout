@@ -3,9 +3,10 @@
 //  SuperEasyLayout
 //
 //  Created by doil6317 on 2018/10/01.
-//  Copyright © 2018年 doil6317. All rights reserved.
+//  Copyright © 2018 doil6317. All rights reserved.
 //
 
+#if os(iOS)
 import UIKit
 
 public class Anchor: CustomStringConvertible {
@@ -383,3 +384,4 @@ extension UIView {
         set { setContentCompressionResistancePriority(newValue, for: .vertical) }
     }
 }
+#endif

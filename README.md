@@ -30,6 +30,14 @@ button.height == 44.0
 
 ## Installation
 
+### Swift package
+
+* File > Swift Packages > Add Package Dependency
+* Add https://github.com/doil6317/SuperEasyLayout.git
+* Select "Up to Next Major"
+
+### Cocoapods
+
 SuperEasyLayout is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 

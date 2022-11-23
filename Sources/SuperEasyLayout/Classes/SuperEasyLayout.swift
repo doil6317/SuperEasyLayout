@@ -31,7 +31,7 @@ public class Anchor: CustomStringConvertible {
         case height
     }
 
-    let view: UIView
+    let object: Any
     let anchor: AnchType
     var constant: CGFloat = 0.0
     var multiplier: CGFloat = 1.0
@@ -39,7 +39,7 @@ public class Anchor: CustomStringConvertible {
     var isActive = true
 
     public var description: String {
-        return "view:\(view), anchor: \(anchor), constant: \(constant), priority: \(priority), isActive: \(isActive)"
+        return "object :\(object), anchor: \(anchor), constant: \(constant), priority: \(priority), isActive: \(isActive)"
     }
 
     var attribute: NSLayoutConstraint.Attribute {
@@ -83,8 +83,8 @@ public class Anchor: CustomStringConvertible {
         }
     }
 
-    init(view: UIView, anchor: AnchType, constant: CGFloat = 0.0, multiplier: CGFloat = 1.0, priority: UILayoutPriority = .required, isActive: Bool = true) {
-        self.view = view
+    init(object: Any, anchor: AnchType, constant: CGFloat = 0.0, multiplier: CGFloat = 1.0, priority: UILayoutPriority = .required, isActive: Bool = true) {
+        self.object = object
         self.anchor = anchor
         self.constant = constant
         self.multiplier = multiplier
@@ -93,13 +93,27 @@ public class Anchor: CustomStringConvertible {
     }
 
     private func makeConstraint(_ anchor: Anchor, relatedBy relation: NSLayoutConstraint.Relation, constant: CGFloat = 0.0, multiplier: CGFloat = 1.0, isActive: Bool = true, priority: UILayoutPriority = .required) -> NSLayoutConstraint {
-        view.translatesAutoresizingMaskIntoConstraints = false
-        let constraint = NSLayoutConstraint(item: view,
+        (object as? UIView)?.translatesAutoresizingMaskIntoConstraints = false
+        let constraint = NSLayoutConstraint(item: object,
                                             attribute: attribute,
                                             relatedBy: relation,
-                                            toItem: anchor.view,
+                                            toItem: anchor.object,
                                             attribute: anchor.attribute,
                                             multiplier: anchor.multiplier,
+                                            constant: constant)
+        constraint.priority = priority
+        constraint.isActive = isActive
+        return constraint
+    }
+
+    private func makeDimestionConstraint(attribute: NSLayoutConstraint.Attribute, relatedBy relation: NSLayoutConstraint.Relation, constant: CGFloat, isActive: Bool = true, priority: UILayoutPriority = .required) -> NSLayoutConstraint {
+        (object as? UIView)?.translatesAutoresizingMaskIntoConstraints = false
+        let constraint = NSLayoutConstraint(item: object,
+                                            attribute: attribute,
+                                            relatedBy: relation,
+                                            toItem: nil,
+                                            attribute: attribute,
+                                            multiplier: 1.0,
                                             constant: constant)
         constraint.priority = priority
         constraint.isActive = isActive
@@ -134,101 +148,6 @@ public class Anchor: CustomStringConvertible {
                               multiplier: multiplier,
                               isActive: isActive,
                               priority: priority)
-    }
-
-    @discardableResult
-    func getDisabled() -> Self {
-        isActive = false
-        return self
-    }
-}
-
-/// Autolayout Helpers
-extension UIView {
-    public var top: Anchor {
-        return Anchor(view: self, anchor: .top)
-    }
-
-    public var topMargin: Anchor {
-        return Anchor(view: self, anchor: .topMargin)
-    }
-
-    public var bottom: Anchor {
-        return Anchor(view: self, anchor: .bottom)
-    }
-
-    public var bottomMargin: Anchor {
-        return Anchor(view: self, anchor: .bottomMargin)
-    }
-
-    public var firstBaseline: Anchor {
-        return Anchor(view: self, anchor: .firstBaseline)
-    }
-
-    public var lastBaseline: Anchor {
-        return Anchor(view: self, anchor: .lastBaseline)
-    }
-
-    public var centerY: Anchor {
-        return Anchor(view: self, anchor: .centerY)
-    }
-
-    public var leading: Anchor {
-        return Anchor(view: self, anchor: .leading)
-    }
-
-    public var leadingMargin: Anchor {
-        return Anchor(view: self, anchor: .leadingMargin)
-    }
-
-    public var left: Anchor {
-        return Anchor(view: self, anchor: .left)
-    }
-
-    public var leftMargin: Anchor {
-        return Anchor(view: self, anchor: .leftMargin)
-    }
-
-    public var trailing: Anchor {
-        return Anchor(view: self, anchor: .trailing)
-    }
-
-    public var trailingMargin: Anchor {
-        return Anchor(view: self, anchor: .trailingMargin)
-    }
-
-    public var right: Anchor {
-        return Anchor(view: self, anchor: .right)
-    }
-
-    public var rightMargin: Anchor {
-        return Anchor(view: self, anchor: .rightMargin)
-    }
-
-    public var centerX: Anchor {
-        return Anchor(view: self, anchor: .centerX)
-    }
-
-    public var width: Anchor {
-        return Anchor(view: self, anchor: .width)
-    }
-
-    public var height: Anchor {
-        return Anchor(view: self, anchor: .height)
-    }
-
-    private func makeDimestionConstraint(attribute: NSLayoutConstraint.Attribute, relatedBy relation: NSLayoutConstraint.Relation, constant: CGFloat, isActive: Bool = true, priority: UILayoutPriority = .required) -> NSLayoutConstraint {
-        translatesAutoresizingMaskIntoConstraints = false
-        let constraint = NSLayoutConstraint(item: self,
-                                            attribute: attribute,
-                                            relatedBy: relation,
-                                            toItem: nil,
-                                            attribute: attribute,
-                                            multiplier: 1.0,
-                                            constant: constant)
-        constraint.priority = priority
-        constraint.isActive = isActive
-        return constraint
     }
 
     @discardableResult
@@ -272,6 +191,167 @@ extension UIView {
                                        relatedBy: .lessThanOrEqual,
                                        constant: constant)
     }
+    @discardableResult
+    func getDisabled() -> Self {
+        isActive = false
+        return self
+    }
+
+    @discardableResult
+    func setPriority(_ priority: UILayoutPriority) -> Self {
+        self.priority = priority
+        return self
+    }
+}
+
+/// Autolayout Helpers
+extension UIView {
+    public var top: Anchor {
+        return Anchor(object: self, anchor: .top)
+    }
+
+    public var topMargin: Anchor {
+        return Anchor(object: self, anchor: .topMargin)
+    }
+
+    public var bottom: Anchor {
+        return Anchor(object: self, anchor: .bottom)
+    }
+
+    public var bottomMargin: Anchor {
+        return Anchor(object: self, anchor: .bottomMargin)
+    }
+
+    public var firstBaseline: Anchor {
+        return Anchor(object: self, anchor: .firstBaseline)
+    }
+
+    public var lastBaseline: Anchor {
+        return Anchor(object: self, anchor: .lastBaseline)
+    }
+
+    public var centerY: Anchor {
+        return Anchor(object: self, anchor: .centerY)
+    }
+
+    public var leading: Anchor {
+        return Anchor(object: self, anchor: .leading)
+    }
+
+    public var leadingMargin: Anchor {
+        return Anchor(object: self, anchor: .leadingMargin)
+    }
+
+    public var left: Anchor {
+        return Anchor(object: self, anchor: .left)
+    }
+
+    public var leftMargin: Anchor {
+        return Anchor(object: self, anchor: .leftMargin)
+    }
+
+    public var trailing: Anchor {
+        return Anchor(object: self, anchor: .trailing)
+    }
+
+    public var trailingMargin: Anchor {
+        return Anchor(object: self, anchor: .trailingMargin)
+    }
+
+    public var right: Anchor {
+        return Anchor(object: self, anchor: .right)
+    }
+
+    public var rightMargin: Anchor {
+        return Anchor(object: self, anchor: .rightMargin)
+    }
+
+    public var centerX: Anchor {
+        return Anchor(object: self, anchor: .centerX)
+    }
+
+    public var width: Anchor {
+        return Anchor(object: self, anchor: .width)
+    }
+
+    public var height: Anchor {
+        return Anchor(object: self, anchor: .height)
+    }
+}
+
+/// Autolayout Helpers
+extension UILayoutGuide {
+    public var top: Anchor {
+        return Anchor(object: self, anchor: .top)
+    }
+
+    public var topMargin: Anchor {
+        return Anchor(object: self, anchor: .topMargin)
+    }
+
+    public var bottom: Anchor {
+        return Anchor(object: self, anchor: .bottom)
+    }
+
+    public var bottomMargin: Anchor {
+        return Anchor(object: self, anchor: .bottomMargin)
+    }
+
+    public var firstBaseline: Anchor {
+        return Anchor(object: self, anchor: .firstBaseline)
+    }
+
+    public var lastBaseline: Anchor {
+        return Anchor(object: self, anchor: .lastBaseline)
+    }
+
+    public var centerY: Anchor {
+        return Anchor(object: self, anchor: .centerY)
+    }
+
+    public var leading: Anchor {
+        return Anchor(object: self, anchor: .leading)
+    }
+
+    public var leadingMargin: Anchor {
+        return Anchor(object: self, anchor: .leadingMargin)
+    }
+
+    public var left: Anchor {
+        return Anchor(object: self, anchor: .left)
+    }
+
+    public var leftMargin: Anchor {
+        return Anchor(object: self, anchor: .leftMargin)
+    }
+
+    public var trailing: Anchor {
+        return Anchor(object: self, anchor: .trailing)
+    }
+
+    public var trailingMargin: Anchor {
+        return Anchor(object: self, anchor: .trailingMargin)
+    }
+
+    public var right: Anchor {
+        return Anchor(object: self, anchor: .right)
+    }
+
+    public var rightMargin: Anchor {
+        return Anchor(object: self, anchor: .rightMargin)
+    }
+
+    public var centerX: Anchor {
+        return Anchor(object: self, anchor: .centerX)
+    }
+
+    public var width: Anchor {
+        return Anchor(object: self, anchor: .width)
+    }
+
+    public var height: Anchor {
+        return Anchor(object: self, anchor: .height)
+    }
 }
 
 precedencegroup AnchorPriorityOperatorPrecedence {
@@ -308,11 +388,11 @@ extension Anchor {
     public static func == (lv: Anchor, rv: CGFloat) -> NSLayoutConstraint  {
         switch lv.anchor {
         case .width:
-            return lv.view.width(equalTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.width(equalTo: rv, isActive: lv.isActive, priority: lv.priority)
         case .height:
-            return lv.view.height(equalTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.height(equalTo: rv, isActive: lv.isActive, priority: lv.priority)
         default:
-            fatalError("widthもしくはheightのみ利用可能です")
+            fatalError("You can use only width or height.")
         }
     }
 
@@ -320,11 +400,11 @@ extension Anchor {
     public static func >= (lv: Anchor, rv: CGFloat) -> NSLayoutConstraint  {
         switch lv.anchor {
         case .width:
-            return lv.view.width(greaterThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.width(greaterThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
         case .height:
-            return lv.view.height(greaterThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.height(greaterThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
         default:
-            fatalError("widthもしくはheightのみ利用可能です")
+            fatalError("You can use only width or height.")
         }
     }
 
@@ -332,11 +412,11 @@ extension Anchor {
     public static func <= (lv: Anchor, rv: CGFloat) -> NSLayoutConstraint  {
         switch lv.anchor {
         case .width:
-            return lv.view.width(lessThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.width(lessThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
         case .height:
-            return lv.view.height(lessThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
+            return lv.height(lessThanOrEqualTo: rv, isActive: lv.isActive, priority: lv.priority)
         default:
-            fatalError("widthもしくはheightのみ利用可能です")
+            fatalError("You can use only width or height.")
         }
     }
 

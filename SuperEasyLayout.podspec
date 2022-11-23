@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SuperEasyLayout'
-  s.version          = '0.2.1'
+  s.version          = '0.3.0'
   s.summary          = 'Super Easy Auto Layout Library'
   s.description      = <<-DESC
                          SuperEasyAutoLayout is a library that allows you to define AutoLayout more easily in the source code.
